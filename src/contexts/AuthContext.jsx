@@ -84,6 +84,67 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
+  const requestPasswordReset = async (phone) => {
+    try {
+      const response = await fetch('/api/auth/password-reset/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      
+      if (response.ok) {
+        return { success: true, message: 'Reset code sent to your phone' };
+      } else {
+        const error = await response.json();
+        return { success: false, message: error.message || 'Failed to send reset code' };
+      }
+    } catch (error) {
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  };
+
+  // New: Verify Reset Code
+  const verifyResetCode = async (phone, code) => {
+    try {
+      const response = await fetch('/api/auth/password-reset/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code }),
+      });
+      
+      if (response.ok) {
+        return { success: true, message: 'Code verified successfully' };
+      } else {
+        const error = await response.json();
+        return { success: false, message: error.message || 'Invalid reset code' };
+      }
+    } catch (error) {
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  };
+
+  // New: Reset Password
+  const resetPassword = async (phone, code, newPassword) => {
+    try {
+      const response = await fetch('/api/auth/password-reset/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code, newPassword }),
+      });
+      
+      if (response.ok) {
+        return { success: true, message: 'Password reset successful' };
+      } else {
+        const error = await response.json();
+        return { success: false, message: error.message || 'Password reset failed' };
+      }
+    } catch (error) {
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  };
+
+
   const logout = () => {
     authAPI.logout();
     setUser(null);

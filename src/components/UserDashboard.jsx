@@ -8,26 +8,36 @@ import TransactionHistory from './TransactionHistory';
 import Statements from './Statements';
 import ProfileSettings from './ProfileSettings';
 import ChamaMembers from './ChamaMembers';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Chart component for reports
 const MonthlyContributionChart = ({ data }) => {
+  const { theme } = useTheme();
   const maxAmount = Math.max(...data.map(item => item.amount), 5000);
   
+  const chartBackground = theme === 'dark' 
+    ? 'bg-gradient-to-br from-gray-800 to-emerald-900/30 border-gray-700'
+    : 'bg-gradient-to-br from-white to-emerald-50 border-emerald-200';
+
+  const textColor = theme === 'dark' ? 'text-gray-300' : 'text-gray-900';
+  const labelColor = theme === 'dark' ? 'text-gray-400' : 'text-gray-600';
+
   return (
-    <div className="w-full h-48 sm:h-64 bg-gradient-to-br from-white to-emerald-50 rounded-lg p-4 sm:p-6 border border-emerald-200">
+    <div className={`w-full h-48 sm:h-64 rounded-lg p-4 sm:p-6 border ${chartBackground}`}>
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Monthly Contributions Trend</h3>
+        <h3 className={`font-semibold text-sm sm:text-base ${textColor}`}>Monthly Contributions Trend</h3>
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full"></div>
-          <span className="text-xs sm:text-sm text-gray-600">Contributions (KSh)</span>
+          <span className={`text-xs sm:text-sm ${labelColor}`}>Contributions (KSh)</span>
         </div>
       </div>
       
       <div className="flex items-end justify-between h-24 sm:h-40 space-x-1 sm:space-x-2">
         {data.map((month, index) => (
           <div key={month.month} className="flex flex-col items-center flex-1">
-            <div className="text-xs text-gray-500 mb-2 hidden xs:block">{month.month}</div>
-            <div className="text-[10px] text-gray-500 mb-2 xs:hidden">{month.month.substring(0, 1)}</div>
+            <div className={`text-xs mb-2 hidden xs:block ${labelColor}`}>{month.month}</div>
+            <div className={`text-[10px] mb-2 xs:hidden ${labelColor}`}>{month.month.substring(0, 1)}</div>
             <div
               className="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-t-lg transition-all duration-300 hover:from-emerald-400 hover:to-emerald-300 hover:shadow-lg"
               style={{ height: `${(month.amount / maxAmount) * 100}%` }}
@@ -45,6 +55,7 @@ const MonthlyContributionChart = ({ data }) => {
 
 const UserDashboard = () => {
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -56,6 +67,24 @@ const UserDashboard = () => {
   const [transactionHistoryOpen, setTransactionHistoryOpen] = useState(false);
   const [statementsOpen, setStatementsOpen] = useState(false);
   const [profileSettingsOpen, setProfileSettingsOpen] = useState(false);
+
+  // Dynamic styles based on theme
+  const backgroundGradient = theme === 'dark' 
+    ? 'bg-gradient-to-br from-gray-900 via-emerald-900/20 to-teal-900/20'
+    : 'bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50';
+
+  const cardBackground = theme === 'dark' 
+    ? 'bg-gray-800/80 border-gray-700 backdrop-blur-sm'
+    : 'bg-white/80 border-emerald-200 backdrop-blur-sm';
+
+  const mobileHeaderBg = theme === 'dark'
+    ? 'bg-gray-800/90 border-gray-700'
+    : 'bg-white/90 border-emerald-200';
+
+  const textColor = theme === 'dark' ? 'text-white' : 'text-gray-900';
+  const descriptionColor = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
+  const borderColor = theme === 'dark' ? 'border-gray-700' : 'border-emerald-200';
+  const hoverBg = theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-emerald-50';
 
   // Sample data for demonstration
   const [membersData] = useState([
@@ -212,8 +241,8 @@ const UserDashboard = () => {
       icon: '💰',
       action: () => setPaymentModalOpen(true),
       gradient: 'from-green-500 to-emerald-600',
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-700'
+      bgColor: theme === 'dark' ? 'bg-gray-700' : 'bg-green-50',
+      textColor: theme === 'dark' ? 'text-green-300' : 'text-green-700'
     },
     {
       name: 'View Statements',
@@ -221,8 +250,8 @@ const UserDashboard = () => {
       icon: '📄',
       action: () => setStatementsOpen(true),
       gradient: 'from-blue-500 to-cyan-600',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-700'
+      bgColor: theme === 'dark' ? 'bg-gray-700' : 'bg-blue-50',
+      textColor: theme === 'dark' ? 'text-blue-300' : 'text-blue-700'
     },
     {
       name: 'Transaction History',
@@ -230,8 +259,8 @@ const UserDashboard = () => {
       icon: '📊',
       action: () => setTransactionHistoryOpen(true),
       gradient: 'from-purple-500 to-indigo-600',
-      bgColor: 'bg-purple-50',
-      textColor: 'text-purple-700'
+      bgColor: theme === 'dark' ? 'bg-gray-700' : 'bg-purple-50',
+      textColor: theme === 'dark' ? 'text-purple-300' : 'text-purple-700'
     },
     {
       name: 'Profile Settings',
@@ -239,18 +268,18 @@ const UserDashboard = () => {
       icon: '👤',
       action: () => setProfileSettingsOpen(true),
       gradient: 'from-orange-500 to-amber-600',
-      bgColor: 'bg-orange-50',
-      textColor: 'text-orange-700'
+      bgColor: theme === 'dark' ? 'bg-gray-700' : 'bg-orange-50',
+      textColor: theme === 'dark' ? 'text-orange-300' : 'text-orange-700'
     },
   ];
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+      <div className={`min-h-screen w-full ${backgroundGradient} flex items-center justify-center transition-colors duration-300`}>
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-emerald-700 font-medium">Loading your dashboard...</p>
-          <p className="text-emerald-600 text-sm mt-2">Getting everything ready for you</p>
+          <p className={`font-medium ${textColor}`}>Loading your dashboard...</p>
+          <p className={`${descriptionColor} text-sm mt-2`}>Getting everything ready for you</p>
         </div>
       </div>
     );
@@ -259,15 +288,15 @@ const UserDashboard = () => {
   const { summary, recentTransactions = [] } = dashboardData || {};
 
   const StatCard = ({ title, value, description, icon, trend }) => (
-    <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300">
+    <Card className={`${cardBackground} shadow-sm hover:shadow-md transition-shadow duration-300`}>
       <CardContent className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-medium text-emerald-600 mb-1 truncate">{title}</p>
-            <p className="text-lg sm:text-2xl font-bold text-gray-900 truncate">{value}</p>
-            <p className="text-xs text-emerald-500 mt-1 truncate">{description}</p>
+            <p className={`text-xs sm:text-sm font-medium mb-1 truncate ${theme === 'dark' ? 'text-emerald-400' : 'text-emerald-600'}`}>{title}</p>
+            <p className={`text-lg sm:text-2xl font-bold truncate ${textColor}`}>{value}</p>
+            <p className={`text-xs mt-1 truncate ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-500'}`}>{description}</p>
             {trend && (
-              <p className={`text-xs font-medium ${trend.color} mt-1`}>
+              <p className={`text-xs font-medium mt-1 ${trend.color}`}>
                 {trend.value} {trend.label}
               </p>
             )}
@@ -281,30 +310,30 @@ const UserDashboard = () => {
   );
 
   const TransactionItem = ({ transaction, index }) => (
-    <div key={index} className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white/50 border border-emerald-100 hover:bg-white transition-colors duration-200">
+    <div key={index} className={`flex items-center justify-between p-3 sm:p-4 rounded-lg border ${theme === 'dark' ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' : 'bg-white/50 border-emerald-100 hover:bg-white'} transition-colors duration-200`}>
       <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-          <span className="text-emerald-600 text-sm sm:text-lg">💰</span>
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${theme === 'dark' ? 'bg-emerald-900/50' : 'bg-emerald-100'}`}>
+          <span className={`text-sm sm:text-lg ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>💰</span>
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">Contribution</p>
-          <p className="text-xs text-gray-500 truncate">
+          <p className={`font-semibold text-sm sm:text-base truncate ${textColor}`}>Contribution</p>
+          <p className={`text-xs truncate ${descriptionColor}`}>
             {new Date(transaction.createdAt).toLocaleDateString('en-US', {
               weekday: 'short',
               month: 'short',
               day: 'numeric'
             })}
           </p>
-          <p className="text-xs text-emerald-600 font-mono truncate">
+          <p className={`text-xs font-mono truncate ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>
             Receipt: {transaction.mpesaReceiptNumber}
           </p>
         </div>
       </div>
       <div className="text-right ml-2 flex-shrink-0">
-        <p className="font-bold text-emerald-700 text-sm sm:text-lg whitespace-nowrap">
+        <p className={`font-bold text-sm sm:text-lg whitespace-nowrap ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-700'}`}>
           KSh {transaction.amount?.toLocaleString()}
         </p>
-        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${theme === 'dark' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-emerald-100 text-emerald-800'}`}>
           ✓ Completed
         </span>
       </div>
@@ -344,10 +373,10 @@ const UserDashboard = () => {
               {/* Left Column */}
               <div className="xl:col-span-2 space-y-6">
                 {/* Quick Actions */}
-                <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+                <Card className={cardBackground}>
                   <CardHeader className="pb-3 sm:pb-4">
-                    <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Quick Actions</CardTitle>
-                    <CardDescription className="text-gray-600 text-sm sm:text-base">Manage your Chama activities</CardDescription>
+                    <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>Quick Actions</CardTitle>
+                    <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>Manage your Chama activities</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
@@ -355,7 +384,7 @@ const UserDashboard = () => {
                         <button
                           key={index}
                           onClick={action.action}
-                          className={`p-3 sm:p-4 rounded-xl border border-emerald-200 bg-white hover:shadow-lg transition-all duration-200 transform hover:scale-105 group ${action.bgColor}`}
+                          className={`p-3 sm:p-4 rounded-xl border transition-all duration-200 transform hover:scale-105 group ${action.bgColor} ${theme === 'dark' ? 'border-gray-600' : 'border-emerald-200'}`}
                         >
                           <div className="flex items-center space-x-2 sm:space-x-3">
                             <div className={`w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br ${action.gradient} rounded-lg flex items-center justify-center text-white text-sm sm:text-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0`}>
@@ -365,7 +394,7 @@ const UserDashboard = () => {
                               <h3 className={`font-semibold text-sm sm:text-base ${action.textColor} group-hover:underline truncate`}>
                                 {action.name}
                               </h3>
-                              <p className="text-xs text-gray-600 mt-1 line-clamp-2">{action.description}</p>
+                              <p className={`text-xs mt-1 line-clamp-2 ${descriptionColor}`}>{action.description}</p>
                             </div>
                           </div>
                         </button>
@@ -375,16 +404,16 @@ const UserDashboard = () => {
                 </Card>
 
                 {/* Recent Transactions */}
-                <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+                <Card className={cardBackground}>
                   <CardHeader className="pb-3 sm:pb-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Recent Transactions</CardTitle>
-                        <CardDescription className="text-gray-600 text-sm sm:text-base">Your latest activities</CardDescription>
+                        <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>Recent Transactions</CardTitle>
+                        <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>Your latest activities</CardDescription>
                       </div>
                       <Button 
                         variant="outline" 
-                        className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-xs sm:text-sm"
+                        className={`text-xs sm:text-sm ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-gray-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
                         onClick={() => setTransactionHistoryOpen(true)}
                       >
                         View All
@@ -399,13 +428,13 @@ const UserDashboard = () => {
                         ))
                       ) : (
                         <div className="text-center py-8 sm:py-12">
-                          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${theme === 'dark' ? 'bg-emerald-900/50' : 'bg-emerald-100'}`}>
+                            <svg className={`w-8 h-8 sm:w-10 sm:h-10 ${theme === 'dark' ? 'text-emerald-400' : 'text-emerald-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                             </svg>
                           </div>
-                          <p className="text-gray-600 font-medium text-sm sm:text-base">No transactions yet</p>
-                          <p className="text-xs sm:text-sm text-gray-500 mt-1">Make your first contribution to get started</p>
+                          <p className={`font-medium text-sm sm:text-base ${descriptionColor}`}>No transactions yet</p>
+                          <p className={`text-xs sm:text-sm mt-1 ${descriptionColor}`}>Make your first contribution to get started</p>
                           <Button 
                             className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-xs sm:text-sm"
                             onClick={() => setPaymentModalOpen(true)}
@@ -422,10 +451,10 @@ const UserDashboard = () => {
               {/* Right Column */}
               <div className="space-y-6">
                 {/* User Info */}
-                <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+                <Card className={cardBackground}>
                   <CardHeader className="pb-3 sm:pb-4">
-                    <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">My Profile</CardTitle>
-                    <CardDescription className="text-gray-600 text-sm sm:text-base">Account information</CardDescription>
+                    <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>My Profile</CardTitle>
+                    <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>Account information</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
@@ -433,30 +462,30 @@ const UserDashboard = () => {
                         {user?.name?.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-bold text-gray-900 text-sm sm:text-lg truncate">{user?.name}</h3>
-                        <p className="text-emerald-600 text-xs sm:text-sm truncate">{user?.phone}</p>
-                        <span className="inline-block mt-1 px-2 py-1 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full capitalize">
+                        <h3 className={`font-bold text-sm sm:text-lg truncate ${textColor}`}>{user?.name}</h3>
+                        <p className={`text-xs sm:text-sm truncate ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>{user?.phone}</p>
+                        <span className={`inline-block mt-1 px-2 py-1 text-xs font-medium rounded-full capitalize ${theme === 'dark' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-emerald-100 text-emerald-800'}`}>
                           {user?.role}
                         </span>
                       </div>
                     </div>
                     <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                       {dashboardData?.user?.joinedDate && (
-                        <div className="flex justify-between items-center py-2 border-b border-emerald-100">
-                          <span className="text-gray-600">Member Since</span>
-                          <span className="font-medium text-gray-900 text-right">
+                        <div className={`flex justify-between items-center py-2 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-emerald-100'}`}>
+                          <span className={descriptionColor}>Member Since</span>
+                          <span className={`font-medium text-right ${textColor}`}>
                             {new Date(dashboardData.user.joinedDate).toLocaleDateString()}
                           </span>
                         </div>
                       )}
-                      <div className="flex justify-between items-center py-2 border-b border-emerald-100">
-                        <span className="text-gray-600">Status</span>
+                      <div className={`flex justify-between items-center py-2 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-emerald-100'}`}>
+                        <span className={descriptionColor}>Status</span>
                         <span className="font-medium text-green-600">Active</span>
                       </div>
                     </div>
                     <Button 
                       variant="outline" 
-                      className="w-full mt-4 border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-xs sm:text-sm"
+                      className={`w-full mt-4 text-xs sm:text-sm ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-gray-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
                       onClick={() => setProfileSettingsOpen(true)}
                     >
                       Edit Profile
@@ -465,10 +494,10 @@ const UserDashboard = () => {
                 </Card>
 
                 {/* Quick Contribution */}
-                <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+                <Card className={cardBackground}>
                   <CardHeader className="pb-3 sm:pb-4">
-                    <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Quick Contribution</CardTitle>
-                    <CardDescription className="text-gray-600 text-sm sm:text-base">Common amounts</CardDescription>
+                    <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>Quick Contribution</CardTitle>
+                    <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>Common amounts</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -476,7 +505,7 @@ const UserDashboard = () => {
                         <Button
                           key={amount}
                           variant="outline"
-                          className="h-10 sm:h-12 border-emerald-300 text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-colors duration-200 font-medium text-xs sm:text-sm"
+                          className={`h-10 sm:h-12 font-medium text-xs sm:text-sm transition-colors duration-200 ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-600' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600'}`}
                           onClick={() => setPaymentModalOpen(true)}
                         >
                           KSh {amount}
@@ -495,68 +524,31 @@ const UserDashboard = () => {
           <div className="space-y-6">
             {/* Members Overview */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-              <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="text-center">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                      <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
+              {[
+                { title: 'Total Members', value: membersData.length, icon: '👥', gradient: 'from-emerald-500 to-green-600' },
+                { title: 'Active Members', value: membersData.filter(m => m.status === 'active').length, icon: '👤', gradient: 'from-blue-500 to-cyan-600' },
+                { title: 'Admins', value: membersData.filter(m => m.role === 'admin').length, icon: '👑', gradient: 'from-purple-500 to-indigo-600' },
+                { title: 'New This Month', value: 2, icon: '🆕', gradient: 'from-orange-500 to-amber-600' },
+              ].map((stat, index) => (
+                <Card key={index} className={cardBackground}>
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="text-center">
+                      <div className={`w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br ${stat.gradient} rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3`}>
+                        <span className="text-white text-sm sm:text-base">{stat.icon}</span>
+                      </div>
+                      <p className={`text-lg sm:text-2xl font-bold ${textColor}`}>{stat.value}</p>
+                      <p className={`text-xs sm:text-sm ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>{stat.title}</p>
                     </div>
-                    <p className="text-lg sm:text-2xl font-bold text-gray-900">{membersData.length}</p>
-                    <p className="text-emerald-600 text-xs sm:text-sm">Total Members</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="text-center">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                      <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                    <p className="text-lg sm:text-2xl font-bold text-gray-900">{membersData.filter(m => m.status === 'active').length}</p>
-                    <p className="text-emerald-600 text-xs sm:text-sm">Active Members</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="text-center">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                      <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-                      </svg>
-                    </div>
-                    <p className="text-lg sm:text-2xl font-bold text-gray-900">{membersData.filter(m => m.role === 'admin').length}</p>
-                    <p className="text-emerald-600 text-xs sm:text-sm">Admins</p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="text-center">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                      <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <p className="text-lg sm:text-2xl font-bold text-gray-900">2</p>
-                    <p className="text-emerald-600 text-xs sm:text-sm">New This Month</p>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
             {/* Quick Actions */}
-            <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+            <Card className={cardBackground}>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Member Management</CardTitle>
-                <CardDescription className="text-gray-600 text-sm sm:text-base">
+                <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>Member Management</CardTitle>
+                <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>
                   Manage Chama members
                 </CardDescription>
               </CardHeader>
@@ -574,7 +566,7 @@ const UserDashboard = () => {
                   
                   <Button 
                     variant="outline"
-                    className="h-16 sm:h-20 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                    className={`h-16 sm:h-20 text-xs sm:text-sm ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-gray-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
                   >
                     <div className="text-center">
                       <div className="text-xl sm:text-2xl mb-1">📞</div>
@@ -586,37 +578,37 @@ const UserDashboard = () => {
             </Card>
 
             {/* Recent Members */}
-            <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+            <Card className={cardBackground}>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Recent Members</CardTitle>
-                <CardDescription className="text-gray-600 text-sm sm:text-base">
+                <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>Recent Members</CardTitle>
+                <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>
                   Newest Chama members
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3 sm:space-y-4">
                   {membersData.slice(0, 3).map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-white/50 border border-emerald-100 hover:bg-white transition-colors duration-200">
+                    <div key={member.id} className={`flex items-center justify-between p-3 sm:p-4 rounded-lg border ${theme === 'dark' ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' : 'bg-white/50 border-emerald-100 hover:bg-white'} transition-colors duration-200`}>
                       <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
                           {member.name.charAt(0)}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-gray-900 text-sm sm:text-base truncate">{member.name}</p>
-                          <p className="text-xs text-gray-500 truncate">{member.phone}</p>
-                          <p className="text-xs text-emerald-600 truncate">
+                          <p className={`font-semibold text-sm sm:text-base truncate ${textColor}`}>{member.name}</p>
+                          <p className={`text-xs truncate ${descriptionColor}`}>{member.phone}</p>
+                          <p className={`text-xs truncate ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>
                             KSh {member.totalContributions?.toLocaleString()} total
                           </p>
                         </div>
                       </div>
                       <div className="text-right ml-2 flex-shrink-0">
-                        <p className="text-xs text-gray-500 whitespace-nowrap">
+                        <p className={`text-xs whitespace-nowrap ${descriptionColor}`}>
                           {new Date(member.joinDate).toLocaleDateString()}
                         </p>
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           member.role === 'admin' 
-                            ? 'bg-purple-100 text-purple-800'
-                            : 'bg-emerald-100 text-emerald-800'
+                            ? theme === 'dark' ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-800'
+                            : theme === 'dark' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-emerald-100 text-emerald-800'
                         }`}>
                           {member.role}
                         </span>
@@ -626,7 +618,7 @@ const UserDashboard = () => {
                 </div>
                 <Button 
                   variant="outline" 
-                  className="w-full mt-4 border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-xs sm:text-sm"
+                  className={`w-full mt-4 text-xs sm:text-sm ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-gray-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
                   onClick={() => setChamaMembersOpen(true)}
                 >
                   View All Members
@@ -636,14 +628,86 @@ const UserDashboard = () => {
           </div>
         );
 
+      case 'quick-actions':
+        return (
+          <div className="space-y-6">
+            <Card className={cardBackground}>
+              <CardHeader>
+                <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>Quick Actions</CardTitle>
+                <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>
+                  Quickly access the most common tasks
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {quickActions.map((action, index) => (
+                    <button
+                      key={index}
+                      onClick={action.action}
+                      className={`p-4 rounded-lg border-2 text-left transition-all duration-200 hover:scale-105 hover:shadow-md ${action.bgColor} ${theme === 'dark' ? 'border-gray-600' : action.textColor.replace('text-', 'border-').replace('-700', '-200')}`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className="text-2xl">{action.icon}</span>
+                        <div>
+                          <h3 className={`font-semibold ${action.textColor}`}>{action.name}</h3>
+                          <p className={`text-sm opacity-80 ${descriptionColor}`}>{action.description}</p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Additional Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className={`${cardBackground} ${theme === 'dark' ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>Total Contributions</p>
+                      <p className={`text-2xl font-bold ${textColor}`}>
+                        KSh {summary?.totalContributions?.toLocaleString() || '0'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className={`${cardBackground} ${theme === 'dark' ? 'bg-emerald-900/20' : 'bg-emerald-50'}`}>
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>Total Transactions</p>
+                      <p className={`text-2xl font-bold ${textColor}`}>
+                        {summary?.totalTransactions || '0'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        );
+
       case 'transactions':
         return (
           <div className="space-y-6">
-            <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+            <Card className={cardBackground}>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Transaction Management</CardTitle>
-                <CardDescription className="text-gray-600 text-sm sm:text-base">
-                  View and manage transactions
+                <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>Transaction Management</CardTitle>
+                <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>
+                  View and manage all your transactions
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -660,19 +724,19 @@ const UserDashboard = () => {
                   
                   <Button 
                     variant="outline"
-                    className="h-16 sm:h-20 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                    className={`h-16 sm:h-20 text-xs sm:text-sm ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-gray-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
                     onClick={() => setPaymentModalOpen(true)}
                   >
                     <div className="text-center">
                       <div className="text-xl sm:text-2xl mb-1">💰</div>
-                      <div className="text-xs sm:text-sm">Make Contribution</div>
+                      <div className="text-xs sm:text-sm">Make New Contribution</div>
                     </div>
                   </Button>
                 </div>
 
                 {/* Recent Transactions List */}
                 <div className="mt-6">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent Transactions</h3>
+                  <h3 className={`text-base sm:text-lg font-semibold mb-4 ${textColor}`}>Recent Transactions</h3>
                   <div className="space-y-2 sm:space-y-3">
                     {recentTransactions.length > 0 ? (
                       recentTransactions.map((transaction, index) => (
@@ -680,13 +744,13 @@ const UserDashboard = () => {
                       ))
                     ) : (
                       <div className="text-center py-8">
-                        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${theme === 'dark' ? 'bg-emerald-900/50' : 'bg-emerald-100'}`}>
+                          <svg className={`w-8 h-8 ${theme === 'dark' ? 'text-emerald-400' : 'text-emerald-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                           </svg>
                         </div>
-                        <p className="text-gray-600 text-sm sm:text-base">No transactions yet</p>
-                        <p className="text-xs sm:text-sm text-gray-500 mt-1">Make your first contribution</p>
+                        <p className={`text-sm sm:text-base ${descriptionColor}`}>No transactions yet</p>
+                        <p className={`text-xs sm:text-sm mt-1 ${descriptionColor}`}>Make your first contribution</p>
                       </div>
                     )}
                   </div>
@@ -699,10 +763,10 @@ const UserDashboard = () => {
       case 'reports':
         return (
           <div className="space-y-6">
-            <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+            <Card className={cardBackground}>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Reports & Statements</CardTitle>
-                <CardDescription className="text-gray-600 text-sm sm:text-base">
+                <CardTitle className={`text-lg sm:text-xl font-bold ${textColor}`}>Reports & Statements</CardTitle>
+                <CardDescription className={`text-sm sm:text-base ${descriptionColor}`}>
                   Financial reports and statements
                 </CardDescription>
               </CardHeader>
@@ -720,7 +784,7 @@ const UserDashboard = () => {
                   
                   <Button 
                     variant="outline"
-                    className="h-16 sm:h-20 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                    className={`h-16 sm:h-20 text-xs sm:text-sm ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-gray-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
                     onClick={handlePrintPDF}
                   >
                     <div className="text-center">
@@ -732,39 +796,39 @@ const UserDashboard = () => {
 
                 {/* Monthly Contribution Chart */}
                 <div className="mt-6">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Monthly Contributions</h3>
+                  <h3 className={`text-base sm:text-lg font-semibold mb-4 ${textColor}`}>Monthly Contributions</h3>
                   <MonthlyContributionChart data={monthlyChartData} />
                 </div>
 
                 {/* Quick Stats */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-6">
-                  <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+                  <Card className={cardBackground}>
                     <CardContent className="p-3 sm:p-4">
                       <div className="text-center">
-                        <p className="text-lg sm:text-2xl font-bold text-emerald-600">
+                        <p className={`text-lg sm:text-2xl font-bold ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>
                           KSh {monthlyChartData.reduce((sum, month) => sum + month.amount, 0).toLocaleString()}
                         </p>
-                        <p className="text-xs sm:text-sm text-gray-600">Total This Year</p>
+                        <p className={`text-xs sm:text-sm ${descriptionColor}`}>Total This Year</p>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+                  <Card className={cardBackground}>
                     <CardContent className="p-3 sm:p-4">
                       <div className="text-center">
-                        <p className="text-lg sm:text-2xl font-bold text-emerald-600">
+                        <p className={`text-lg sm:text-2xl font-bold ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>
                           KSh {Math.max(...monthlyChartData.map(m => m.amount)).toLocaleString()}
                         </p>
-                        <p className="text-xs sm:text-sm text-gray-600">Highest Month</p>
+                        <p className={`text-xs sm:text-sm ${descriptionColor}`}>Highest Month</p>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="border-emerald-200 bg-white/80 backdrop-blur-sm">
+                  <Card className={cardBackground}>
                     <CardContent className="p-3 sm:p-4">
                       <div className="text-center">
-                        <p className="text-lg sm:text-2xl font-bold text-emerald-600">
+                        <p className={`text-lg sm:text-2xl font-bold ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>
                           KSh {Math.round(monthlyChartData.reduce((sum, month) => sum + month.amount, 0) / monthlyChartData.length).toLocaleString()}
                         </p>
-                        <p className="text-xs sm:text-sm text-gray-600">Monthly Average</p>
+                        <p className={`text-xs sm:text-sm ${descriptionColor}`}>Monthly Average</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -780,7 +844,7 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+    <div className={`min-h-screen w-full ${backgroundGradient} transition-colors duration-300`}>
       {/* All Modals */}
       <PaymentModal
         open={paymentModalOpen}
@@ -813,24 +877,25 @@ const UserDashboard = () => {
       />
 
       {/* Mobile Header */}
-      <div className="lg:hidden sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-emerald-200">
+      <div className={`lg:hidden sticky top-0 z-40 backdrop-blur-sm border-b ${mobileHeaderBg}`}>
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors"
+              className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-700 text-emerald-300 hover:bg-gray-600' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <div>
-              <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+              <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-500 to-green-500 bg-clip-text text-transparent">
                 ChamaPro
               </h1>
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            <ThemeToggle />
             <Button
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm"
               onClick={() => setPaymentModalOpen(true)}
@@ -844,14 +909,17 @@ const UserDashboard = () => {
       <div className="flex">
         {/* Sidebar - Desktop */}
         <div className="hidden lg:block w-80 min-h-screen p-6">
-          <Card className="shadow-xl border-emerald-200 bg-white/90 backdrop-blur-sm h-full">
+          <Card className={`shadow-xl h-full ${theme === 'dark' ? 'bg-gray-800/90 border-gray-700' : 'bg-white/90 border-emerald-200'}`}>
             <CardContent className="p-6 h-full flex flex-col">
-              {/* Logo */}
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
-                  ChamaPro
-                </h1>
-                <p className="text-emerald-600 text-sm mt-1 font-medium">Member Portal</p>
+              {/* Logo and Theme Toggle */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="text-center flex-1">
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 bg-clip-text text-transparent">
+                    ChamaPro
+                  </h1>
+                  <p className={`text-sm mt-1 font-medium ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>Member Portal</p>
+                </div>
+                <ThemeToggle />
               </div>
 
               {/* Navigation */}
@@ -863,10 +931,10 @@ const UserDashboard = () => {
                     className={`w-full flex items-center space-x-4 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
                       activeSection === item.id
                         ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-200'
-                        : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-md'
+                        : `${textColor} ${hoverBg} hover:shadow-md`
                     }`}
                   >
-                    <div className={`${activeSection === item.id ? 'text-white' : 'text-emerald-500'}`}>
+                    <div className={`${activeSection === item.id ? 'text-white' : theme === 'dark' ? 'text-emerald-400' : 'text-emerald-500'}`}>
                       {item.icon}
                     </div>
                     <span className="font-medium">{item.name}</span>
@@ -875,7 +943,7 @@ const UserDashboard = () => {
               </nav>
 
               {/* Quick Actions & Logout */}
-              <div className="space-y-4 pt-6 border-t border-emerald-100">
+              <div className={`space-y-4 pt-6 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-emerald-100'}`}>
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm h-10"
@@ -885,7 +953,7 @@ const UserDashboard = () => {
                   </Button>
                   <Button
                     variant="outline"
-                    className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-sm h-10"
+                    className={`text-sm h-10 ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-gray-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
                     onClick={() => setTransactionHistoryOpen(true)}
                   >
                     📊 History
@@ -894,7 +962,7 @@ const UserDashboard = () => {
                 
                 <Button
                   variant="outline"
-                  className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 h-10"
+                  className={`w-full h-10 ${theme === 'dark' ? 'border-red-800 text-red-400 hover:bg-red-900/50 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300'}`}
                   onClick={logout}
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -914,15 +982,15 @@ const UserDashboard = () => {
               className="absolute inset-0 bg-black/20"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <div className="absolute left-0 top-0 h-full w-80 bg-white/95 backdrop-blur-sm border-r border-emerald-200 overflow-y-auto">
+            <div className={`absolute left-0 top-0 h-full w-80 backdrop-blur-sm border-r overflow-y-auto ${theme === 'dark' ? 'bg-gray-800/95 border-gray-700' : 'bg-white/95 border-emerald-200'}`}>
               <Card className="h-full border-0 shadow-none bg-transparent">
                 <CardContent className="p-6 h-full flex flex-col">
                   {/* Logo */}
                   <div className="text-center mb-8">
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 bg-clip-text text-transparent">
                       ChamaPro
                     </h1>
-                    <p className="text-emerald-600 text-sm mt-1 font-medium">Member Portal</p>
+                    <p className={`text-sm mt-1 font-medium ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>Member Portal</p>
                   </div>
 
                   {/* Navigation */}
@@ -937,10 +1005,10 @@ const UserDashboard = () => {
                         className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
                           activeSection === item.id
                             ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-200'
-                            : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-md'
+                            : `${textColor} ${hoverBg} hover:shadow-md`
                         }`}
                       >
-                        <div className={`${activeSection === item.id ? 'text-white' : 'text-emerald-500'}`}>
+                        <div className={`${activeSection === item.id ? 'text-white' : theme === 'dark' ? 'text-emerald-400' : 'text-emerald-500'}`}>
                           {item.icon}
                         </div>
                         <span className="font-medium text-sm">{item.name}</span>
@@ -949,7 +1017,7 @@ const UserDashboard = () => {
                   </nav>
 
                   {/* Quick Actions & Logout */}
-                  <div className="space-y-4 pt-6 border-t border-emerald-100">
+                  <div className={`space-y-4 pt-6 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-emerald-100'}`}>
                     <div className="grid grid-cols-2 gap-2">
                       <Button
                         className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-9"
@@ -962,7 +1030,7 @@ const UserDashboard = () => {
                       </Button>
                       <Button
                         variant="outline"
-                        className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-xs h-9"
+                        className={`text-xs h-9 ${theme === 'dark' ? 'border-gray-600 text-emerald-300 hover:bg-gray-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-50'}`}
                         onClick={() => {
                           setTransactionHistoryOpen(true);
                           setMobileMenuOpen(false);
@@ -974,7 +1042,7 @@ const UserDashboard = () => {
                     
                     <Button
                       variant="outline"
-                      className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 h-9 text-xs"
+                      className={`w-full h-9 text-xs ${theme === 'dark' ? 'border-red-800 text-red-400 hover:bg-red-900/50 hover:border-red-700' : 'border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300'}`}
                       onClick={logout}
                     >
                       <svg className="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -996,11 +1064,11 @@ const UserDashboard = () => {
             <div className="mb-6 sm:mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-emerald-700 bg-clip-text text-transparent">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 bg-clip-text text-transparent">
                     {navigationItems.find(item => item.id === activeSection)?.name || 'Dashboard'}
                   </h1>
-                  <p className="text-gray-600 mt-2 text-sm sm:text-base lg:text-lg">
-                    Welcome back, <span className="font-semibold text-emerald-700">{user?.name}</span>! { 
+                  <p className={`mt-2 text-sm sm:text-base lg:text-lg ${descriptionColor}`}>
+                    Welcome back, <span className={`font-semibold ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-700'}`}>{user?.name}</span>! { 
                       activeSection === 'dashboard' ? "Here's your Chama overview." :
                       activeSection === 'members' ? "Manage your Chama members." :
                       activeSection === 'reports' ? "View your financial reports." :
@@ -1009,8 +1077,8 @@ const UserDashboard = () => {
                   </p>
                 </div>
                 <div className="text-left sm:text-right">
-                  <p className="text-xs sm:text-sm text-gray-500">Today is</p>
-                  <p className="font-medium text-gray-700 text-sm sm:text-base">
+                  <p className={`text-xs sm:text-sm ${descriptionColor}`}>Today is</p>
+                  <p className={`font-medium text-sm sm:text-base ${textColor}`}>
                     {new Date().toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 

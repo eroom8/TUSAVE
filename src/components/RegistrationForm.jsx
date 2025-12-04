@@ -6,9 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Logo Component (same as above)
 const ChamaProLogo = ({ size = "lg", className = "" }) => {
+  const { theme } = useTheme();
   const sizes = {
     sm: "w-8 h-8",
     md: "w-12 h-12",
@@ -31,9 +34,10 @@ const ChamaProLogo = ({ size = "lg", className = "" }) => {
   );
 };
 
-// Enhanced Registration Form
+// Enhanced Registration Form with Dark Mode
 const RegistrationForm = () => {
   const { register } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -74,36 +78,67 @@ const RegistrationForm = () => {
     }
   };
 
+  // Dynamic styles based on theme
+  const backgroundGradient = theme === 'dark' 
+    ? 'bg-gradient-to-br from-gray-900 via-emerald-900 to-teal-900'
+    : 'bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50';
+
+  const cardBackground = theme === 'dark' 
+    ? 'bg-gray-800/80 border-gray-700'
+    : 'bg-white/80 border-emerald-200';
+
+  const benefitsBackground = theme === 'dark'
+    ? 'bg-gray-800/50 border-gray-700'
+    : 'bg-white/50 border-emerald-200';
+
+  const textColor = theme === 'dark' ? 'text-white' : 'text-gray-900';
+  const descriptionColor = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
+  const inputBorder = theme === 'dark' ? 'border-gray-600 focus:border-emerald-500' : 'border-emerald-300 focus:border-emerald-500';
+  const benefitBg = theme === 'dark' ? 'bg-gray-700' : 'bg-emerald-100';
+  const benefitText = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
+
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 flex items-center justify-center p-4">
+    <div className={`min-h-screen w-full ${backgroundGradient} flex items-center justify-center p-4 transition-colors duration-300`}>
       <div className="w-full max-w-md">
+
+        {/* Theme Toggle positioned at top right */}
+        <div className="flex justify-end mb-4">
+          <ThemeToggle />
+        </div>
+
         {/* Logo Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <ChamaProLogo size="xl" />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 bg-clip-text text-transparent mb-2">
             ChamaPro
           </h1>
-          <p className="text-emerald-600 text-lg">Join Smart Chama Management</p>
+          <p className={`${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'} text-lg`}>
+            Join Smart Chama Management
+          </p>
         </div>
 
-        <Card className="w-full border-emerald-200 shadow-xl bg-white/80 backdrop-blur-sm">
+        <Card className={`w-full shadow-xl backdrop-blur-sm ${cardBackground}`}>
           <CardHeader className="text-center space-y-2 pb-6">
-            <CardTitle className="text-2xl font-bold text-gray-900">Join Our Chama</CardTitle>
-            <CardDescription className="text-gray-600">
+            <CardTitle className={`text-2xl font-bold ${textColor}`}>Join Our Chama</CardTitle>
+            <CardDescription className={descriptionColor}>
               Create your account to start managing your savings
             </CardDescription>
           </CardHeader>
           <CardContent className="pb-8">
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3">
-                <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 ${
+                theme === 'dark' ? 'bg-red-900/50 border border-red-800' : 'bg-red-50 border border-red-200'
+              }`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  theme === 'dark' ? 'bg-red-800' : 'bg-red-100'
+                }`}>
+                  <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-red-600 text-sm flex-1">{error}</p>
+                <p className="text-red-500 text-sm flex-1">{error}</p>
               </div>
             )}
 
@@ -115,13 +150,15 @@ const RegistrationForm = () => {
                   rules={{ required: 'Full name is required' }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">Full Name</FormLabel>
+                      <FormLabel className={`font-medium ${textColor}`}>Full Name</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
                             placeholder="John Doe" 
                             {...field} 
-                            className="pl-12 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                            className={`pl-12 ${inputBorder} ${
+                              theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white'
+                            }`}
                           />
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,7 +167,7 @@ const RegistrationForm = () => {
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage className="text-red-600" />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -147,13 +184,15 @@ const RegistrationForm = () => {
                   }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">Phone Number</FormLabel>
+                      <FormLabel className={`font-medium ${textColor}`}>Phone Number</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
                             placeholder="254712345678" 
                             {...field} 
-                            className="pl-12 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                            className={`pl-12 ${inputBorder} ${
+                              theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white'
+                            }`}
                           />
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +201,7 @@ const RegistrationForm = () => {
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage className="text-red-600" />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -179,14 +218,16 @@ const RegistrationForm = () => {
                   }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">Password</FormLabel>
+                      <FormLabel className={`font-medium ${textColor}`}>Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
                             type="password" 
                             placeholder="••••••••" 
                             {...field} 
-                            className="pl-12 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                            className={`pl-12 ${inputBorder} ${
+                              theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white'
+                            }`}
                           />
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,7 +236,7 @@ const RegistrationForm = () => {
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage className="text-red-600" />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -206,14 +247,16 @@ const RegistrationForm = () => {
                   rules={{ required: 'Please confirm your password' }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">Confirm Password</FormLabel>
+                      <FormLabel className={`font-medium ${textColor}`}>Confirm Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
                             type="password" 
                             placeholder="••••••••" 
                             {...field} 
-                            className="pl-12 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                            className={`pl-12 ${inputBorder} ${
+                              theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white'
+                            }`}
                           />
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,7 +265,7 @@ const RegistrationForm = () => {
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage className="text-red-600" />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -231,16 +274,18 @@ const RegistrationForm = () => {
                   <input 
                     type="checkbox" 
                     id="terms" 
-                    className="w-4 h-4 text-emerald-600 border-emerald-300 rounded focus:ring-emerald-500" 
+                    className={`w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 ${
+                      theme === 'dark' ? 'border-gray-600 bg-gray-700' : 'border-emerald-300'
+                    }`} 
                     required
                   />
-                  <label htmlFor="terms" className="text-gray-600 cursor-pointer">
+                  <label htmlFor="terms" className={`${descriptionColor} cursor-pointer`}>
                     I agree to the{' '}
-                    <a href="#" className="text-emerald-600 hover:text-emerald-700 font-medium hover:underline">
+                    <a href="#" className="text-emerald-500 hover:text-emerald-400 font-medium hover:underline">
                       Terms of Service
                     </a>{' '}
                     and{' '}
-                    <a href="#" className="text-emerald-600 hover:text-emerald-700 font-medium hover:underline">
+                    <a href="#" className="text-emerald-500 hover:text-emerald-400 font-medium hover:underline">
                       Privacy Policy
                     </a>
                   </label>
@@ -264,11 +309,11 @@ const RegistrationForm = () => {
             </Form>
 
             <div className="mt-8 text-center">
-              <p className="text-gray-600">
+              <p className={descriptionColor}>
                 Already have an account?{' '}
                 <Link 
                   to="/login" 
-                  className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors duration-200"
+                  className="text-emerald-500 hover:text-emerald-400 font-semibold hover:underline transition-colors duration-200"
                 >
                   Sign in
                 </Link>
@@ -278,32 +323,32 @@ const RegistrationForm = () => {
         </Card>
 
         {/* Benefits Section */}
-        <div className="mt-8 bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-emerald-200">
-          <h3 className="font-semibold text-gray-900 mb-4 text-center">Why Join ChamaPro?</h3>
+        <div className={`mt-8 backdrop-blur-sm rounded-xl p-6 border ${benefitsBackground}`}>
+          <h3 className={`font-semibold mb-4 text-center ${textColor}`}>Why Join ChamaPro?</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-emerald-600 text-xs">✓</span>
+              <div className={`w-6 h-6 ${benefitBg} rounded-full flex items-center justify-center flex-shrink-0`}>
+                <span className="text-emerald-500 text-xs">✓</span>
               </div>
-              <span className="text-gray-600">Secure Savings</span>
+              <span className={benefitText}>Secure Savings</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-emerald-600 text-xs">✓</span>
+              <div className={`w-6 h-6 ${benefitBg} rounded-full flex items-center justify-center flex-shrink-0`}>
+                <span className="text-emerald-500 text-xs">✓</span>
               </div>
-              <span className="text-gray-600">Easy Tracking</span>
+              <span className={benefitText}>Easy Tracking</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-emerald-600 text-xs">✓</span>
+              <div className={`w-6 h-6 ${benefitBg} rounded-full flex items-center justify-center flex-shrink-0`}>
+                <span className="text-emerald-500 text-xs">✓</span>
               </div>
-              <span className="text-gray-600">Mobile Access</span>
+              <span className={benefitText}>Mobile Access</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-emerald-600 text-xs">✓</span>
+              <div className={`w-6 h-6 ${benefitBg} rounded-full flex items-center justify-center flex-shrink-0`}>
+                <span className="text-emerald-500 text-xs">✓</span>
               </div>
-              <span className="text-gray-600">24/7 Support</span>
+              <span className={benefitText}>24/7 Support</span>
             </div>
           </div>
         </div>

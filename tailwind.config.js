@@ -15,6 +15,7 @@ module.exports = {
       screens: {
         "2xl": "1400px",
       },
+
     },
     extend: {
       colors: {
@@ -35,8 +36,16 @@ module.exports = {
       },
       backgroundColor: {
         'primary-light': '#edffe8',
-      }
+      },
+       borderColor: {
+        'border': 'hsl(var(--border))',
+      },
+      
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+  require("tailwindcss-animate")
+]
+
 }
+

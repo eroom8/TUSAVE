@@ -1,8 +1,140 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@config "../tailwind.config.js";
 
 
+@layer base {
+    * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 142 76% 29%; /* Your primary green #2c6e49 */
+    --primary-foreground: 355 100% 97%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 142 76% 29%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 142 76% 29%;
+    --primary-foreground: 144 100% 97%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142 76% 29%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  /* Ensure full coverage for custom backgrounds */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+  }
+  
+  #root {
+    min-height: 100vh;
+    width: 100%;
+  }
+}
+
+/* Custom color classes for light mode */
+.bg-custom-primary-50 {
+  background-color: #edffe8;
+}
+.bg-custom-primary-100 {
+  background-color: #d8ffd0;
+}
+.bg-custom-primary-500 {
+  background-color: #4c956c;
+}
+.bg-custom-primary-600 {
+  background-color: #2c6e49;
+}
+.bg-custom-primary-700 {
+  background-color: #1e4f34;
+}
+.text-custom-primary-500 {
+  color: #4c956c;
+}
+.text-custom-primary-600 {
+  color: #2c6e49;
+}
+.text-custom-primary-700 {
+  color: #1e4f34;
+}
+.border-custom-primary-200 {
+  border-color: #a3d9a5;
+}
+.border-custom-primary-600 {
+  border-color: #2c6e49;
+}
+
+/* Dark mode overrides */
+.dark .bg-custom-primary-50 {
+  background-color: #1a2f1f;
+}
+.dark .bg-custom-primary-100 {
+  background-color: #1e3a24;
+}
+.dark .text-custom-primary-500 {
+  color: #4c956c;
+}
+.dark .text-custom-primary-600 {
+  color: #68b684;
+}
+.dark .text-custom-primary-700 {
+  color: #8fcf9d;
+}
+.dark .border-custom-primary-200 {
+  border-color: #2d5a3d;
+}
+.dark .border-custom-primary-600 {
+  border-color: #4c956c;
+}
+
+/*
 
 @custom-variant dark (&:is(.dark *));
 
@@ -113,11 +245,4 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+*/

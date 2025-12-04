@@ -6,9 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // Logo Component
 const ChamaProLogo = ({ size = "lg", className = "" }) => {
+  const { theme } = useTheme();
   const sizes = {
     sm: "w-8 h-8",
     md: "w-12 h-12",
@@ -31,9 +34,10 @@ const ChamaProLogo = ({ size = "lg", className = "" }) => {
   );
 };
 
-// Enhanced Login Form
+// Enhanced Login Form with Dark Mode
 const LoginForm = () => {
   const { login } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -60,36 +64,82 @@ const LoginForm = () => {
     }
   };
 
+
+
+  const [rememberMe, setRememberMe] = useState(localStorage.getItem('rememberMe') === 'true');
+
+  const [showPassword, setShowPassword] = useState(false);
+
+const handleRememberMe = (e) => {
+  setRememberMe(e.target.checked);
+  if (e.target.checked) {
+    localStorage.setItem('rememberMe', 'true');
+  } else {
+    localStorage.removeItem('rememberMe');
+  }
+};
+
+   
+
+
+
+  // Dynamic background based on theme
+  const backgroundGradient = theme === 'dark' 
+    ? 'bg-gradient-to-br from-gray-900 via-emerald-900 to-teal-900'
+    : 'bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50';
+
+  const cardBackground = theme === 'dark' 
+    ? 'bg-gray-800/80 border-gray-700'
+    : 'bg-white/80 border-emerald-200';
+
+  const textColor = theme === 'dark' ? 'text-white' : 'text-gray-900';
+  const descriptionColor = theme === 'dark' ? 'text-gray-300' : 'text-gray-600';
+  const inputBorder = theme === 'dark' ? 'border-gray-600 focus:border-emerald-500' : 'border-emerald-300 focus:border-emerald-500';
+  const featureBg = theme === 'dark' ? 'bg-gray-700' : 'bg-emerald-100';
+  const featureText = theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600';
+
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 flex items-center justify-center p-4">
+    <div className={`min-h-screen w-full ${backgroundGradient} flex items-center justify-center p-4 transition-colors duration-300`}>
       <div className="w-full max-w-md">
+
+        {/* Theme Toggle positioned at top right */}
+        <div className="flex justify-end mb-4">
+          <ThemeToggle />
+        </div>
+        
         {/* Logo Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <ChamaProLogo size="xl" />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 bg-clip-text text-transparent mb-2">
             ChamaPro
           </h1>
-          <p className="text-emerald-600 text-lg">Smart Chama Management</p>
+          <p className={`${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'} text-lg`}>
+            Smart Chama Management
+          </p>
         </div>
 
-        <Card className="w-full border-emerald-200 shadow-xl bg-white/80 backdrop-blur-sm">
+        <Card className={`w-full shadow-xl backdrop-blur-sm ${cardBackground}`}>
           <CardHeader className="text-center space-y-2 pb-6">
-            <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
-            <CardDescription className="text-gray-600">
+            <CardTitle className={`text-2xl font-bold ${textColor}`}>Welcome Back</CardTitle>
+            <CardDescription className={descriptionColor}>
               Sign in to your Chama account to continue
             </CardDescription>
           </CardHeader>
           <CardContent className="pb-8">
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center space-x-3">
-                <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 ${
+                theme === 'dark' ? 'bg-red-900/50 border border-red-800' : 'bg-red-50 border border-red-200'
+              }`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  theme === 'dark' ? 'bg-red-800' : 'bg-red-100'
+                }`}>
+                  <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-red-600 text-sm flex-1">{error}</p>
+                <p className="text-red-500 text-sm flex-1">{error}</p>
               </div>
             )}
 
@@ -107,13 +157,15 @@ const LoginForm = () => {
                   }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">Phone Number</FormLabel>
+                      <FormLabel className={`font-medium ${textColor}`}>Phone Number</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
                             placeholder="254712345678" 
                             {...field} 
-                            className="pl-12 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                            className={`pl-12 ${inputBorder} ${
+                              theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white'
+                            }`}
                           />
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,7 +174,7 @@ const LoginForm = () => {
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage className="text-red-600" />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
@@ -133,14 +185,16 @@ const LoginForm = () => {
                   rules={{ required: 'Password is required' }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">Password</FormLabel>
+                      <FormLabel className={`font-medium ${textColor}`}>Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
                             type="password" 
                             placeholder="••••••••" 
                             {...field} 
-                            className="pl-12 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                            className={`pl-12 ${inputBorder} ${
+                              theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white'
+                            }`}
                           />
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,19 +203,26 @@ const LoginForm = () => {
                           </div>
                         </div>
                       </FormControl>
-                      <FormMessage className="text-red-600" />
+                      <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
 
                 <div className="flex items-center justify-between text-sm">
                   <label className="flex items-center space-x-2 cursor-pointer">
-                    <input type="checkbox" className="w-4 h-4 text-emerald-600 border-emerald-300 rounded focus:ring-emerald-500" />
-                    <span className="text-gray-600">Remember me</span>
+                    <input 
+                      type="checkbox" 
+                      className={`w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 ${
+                        theme === 'dark' ? 'border-gray-600 bg-gray-700' : 'border-emerald-300'
+                      }`} 
+                    />
+                    <span className={descriptionColor}>Remember me</span>
                   </label>
-                  <a href="#" className="text-emerald-600 hover:text-emerald-700 font-medium hover:underline">
-                    Forgot password?
-                  </a>
+
+                  <Link to="/password-reset"   className="text-emerald-500 hover:text-emerald-400 font-medium hover:underline transition-colors">
+                   Forgot password?
+                  </Link>
+                    
                 </div>
 
                 <Button 
@@ -182,11 +243,11 @@ const LoginForm = () => {
             </Form>
 
             <div className="mt-8 text-center">
-              <p className="text-gray-600">
+              <p className={descriptionColor}>
                 Don't have an account?{' '}
                 <Link 
                   to="/register" 
-                  className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors duration-200"
+                  className="text-emerald-500 hover:text-emerald-400 font-semibold hover:underline transition-colors duration-200"
                 >
                   Create account
                 </Link>
@@ -197,20 +258,20 @@ const LoginForm = () => {
 
         {/* Feature Highlights */}
         <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-          <div className="text-emerald-600">
-            <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
+          <div className={featureText}>
+            <div className={`w-8 h-8 ${featureBg} rounded-full flex items-center justify-center mx-auto mb-2`}>
               <span className="text-sm">💰</span>
             </div>
             <p className="text-xs font-medium">Secure Savings</p>
           </div>
-          <div className="text-emerald-600">
-            <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
+          <div className={featureText}>
+            <div className={`w-8 h-8 ${featureBg} rounded-full flex items-center justify-center mx-auto mb-2`}>
               <span className="text-sm">📊</span>
             </div>
             <p className="text-xs font-medium">Easy Tracking</p>
           </div>
-          <div className="text-emerald-600">
-            <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
+          <div className={featureText}>
+            <div className={`w-8 h-8 ${featureBg} rounded-full flex items-center justify-center mx-auto mb-2`}>
               <span className="text-sm">👥</span>
             </div>
             <p className="text-xs font-medium">Group Management</p>
